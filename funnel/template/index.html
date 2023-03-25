@@ -1,0 +1,17 @@
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>funnel</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+  {% for funnel in funnels %}
+  <h1><a href="funnels/{{ funnel.name }}">{{ funnel.human_readable_name }} ({{ funnel.name }})</a></h1>
+  <ul>
+    {% for step in funnel.steps %}
+    <li>{{ step }}</li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</body>
+</html>

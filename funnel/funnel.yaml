@@ -1,0 +1,12 @@
+- name: onboarding
+  human_readable_name: 온보딩
+  steps:
+    - first_open
+    - sign_up
+    - tutorial_completed
+- name: membership
+  human_readable_name: 멤버십 구독
+  steps:
+    - view_paywall
+    - start_trial
+    - pay_membership

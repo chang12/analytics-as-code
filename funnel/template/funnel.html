@@ -1,0 +1,54 @@
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ funnel.name }}</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+<header>
+  <nav>
+    <a href="/">Home</a>
+  </nav>
+</header>
+<div id="container"></div>
+<script>
+    // Define the data for the chart
+    const funnel = JSON.parse('{{ funnel.to_dict() | tojson }}')
+    const chart_data = {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '{{ funnel.title() }}'
+        },
+        xAxis: {
+            categories: funnel.steps.map(step => step.name)
+        },
+        yAxis: {
+            title: {
+                text: 'Conversion rate'
+            },
+            // max: 1.0,
+            // labels: {
+            //     formatter: function () {
+            //         return (this.value * 100).toFixed(0) + '%';
+            //     }
+            // }
+        },
+        series: [{
+            name: 'users',
+            data: funnel.steps.map(step => step.value),
+        }],
+        tooltip: {
+            pointFormatter: function() {
+                // return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + (this.y * 100).toFixed(0) + '%</b><br/>';
+                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b><br/>';
+            },
+        },
+    };
+
+    // Create the chart
+    Highcharts.chart('container', chart_data);
+</script>
+</body>
+</html>
