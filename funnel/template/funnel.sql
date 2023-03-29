@@ -6,7 +6,7 @@ from (
     user_id,
     [
       {%- for step in funnel.list_steps() %}
-      struct('{{ step.name }}' as name, logical_or(event_name = '{{ step.name }}') as b){% if not loop.last %},{% endif %}
+      struct({{ loop.index }} as idx, '{{ step.name }}' as name, logical_or(event_name = '{{ step.name }}') as b){% if not loop.last %},{% endif %}
       {%- endfor %}
     ] as steps,
   from (
@@ -23,3 +23,5 @@ group by
   name
 having
   name is not null
+order by
+  any_value(step.idx)
