@@ -29,11 +29,12 @@
                 text: ''
             },
             // max: 1.0,
-            // labels: {
-            //     formatter: function () {
-            //         return (this.value * 100).toFixed(0) + '%';
-            //     }
-            // }
+            labels: {
+                formatter: function () {
+                    // return (this.value * 100).toFixed(0) + '%';
+                  return Highcharts.numberFormat(this.value, 0, ".", ",");
+                }
+            }
         },
         series: [{
             name: 'users',
