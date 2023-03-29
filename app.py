@@ -1,3 +1,5 @@
+from typing import Dict
+
 import yaml
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
@@ -10,7 +12,7 @@ templates = Jinja2Templates(directory='funnel/template')
 
 with open('funnel/funnel.yaml', 'r') as fp:
     funnels = yaml.load(fp, Loader=yaml.FullLoader)
-    funnels_dict = {funnel['name']: Funnel(**funnel) for funnel in funnels}
+    funnels_dict: Dict[str, Funnel] = {funnel['name']: Funnel(**funnel) for funnel in funnels}
 
 
 @app.get('/')
@@ -26,11 +28,10 @@ async def read_root(request: Request):
 
 @app.get("/funnels/{funnel_name}")
 async def read_funnel(request: Request, funnel_name: str):
-    funnel: Funnel = funnels_dict[funnel_name]
     return templates.TemplateResponse(
         'funnel.html',
         {
             'request': request,
-            'funnel': funnel,
+            'funnel': funnels_dict[funnel_name].to_data().dict(),
         }
     )

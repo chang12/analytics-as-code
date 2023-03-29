@@ -13,13 +13,13 @@
 <div id="container"></div>
 <script>
     // Define the data for the chart
-    const funnel = JSON.parse('{{ funnel.to_dict() | tojson }}')
+    const funnel = JSON.parse('{{ funnel | tojson }}')
     const chart_data = {
         chart: {
             type: 'column'
         },
         title: {
-            text: '{{ funnel.title() }}'
+            text: funnel.title
         },
         xAxis: {
             categories: funnel.steps.map(step => step.name)

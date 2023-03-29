@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict, Any
+from typing import List, Optional
 
 import yaml
 from google.cloud import bigquery
@@ -18,9 +18,15 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'funnel.yaml'
 
 class Step(BaseModel):
     name: str
+    value: Optional[int]
 
     def get_table_id(self) -> str:
         return f'{config.PROJECT_ID}.{config.DATASET_ID}.{self.name}'
+
+
+class FunnelData(BaseModel):
+    title: str
+    steps: List[Step]
 
 
 class Funnel(BaseModel):
@@ -31,10 +37,11 @@ class Funnel(BaseModel):
     def title(self) -> str:
         return f'{self.human_readable_name} ({self.name})'
 
-    def to_dict(self) -> Dict:
-        base = self.dict()
-        base['steps'] = self.query_data()
-        return base
+    def to_data(self) -> FunnelData:
+        return FunnelData(
+            title=self.title(),
+            steps=self.query_data(),
+        )
 
     def list_steps(self) -> List[Step]:
         return [Step(name=step) for step in self.steps]
@@ -42,10 +49,13 @@ class Funnel(BaseModel):
     def get_query(self) -> str:
         return funnel_sql_template.render(funnel=self)
 
-    def query_data(self) -> List[Dict[str, Any]]:
+    def query_data(self) -> List[Step]:
         client = bigquery.Client(project=config.PROJECT_ID)
         query_job = client.query(self.get_query())
-        return query_job.to_dataframe().to_dict('records')
+        return [
+            Step(**record)
+            for record in query_job.to_dataframe().to_dict('records')
+        ]
 
 
 if __name__ == '__main__':
