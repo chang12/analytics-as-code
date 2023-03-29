@@ -1,6 +1,7 @@
 import os
 from typing import List, Optional
 
+import pandas as pd
 import yaml
 from google.cloud import bigquery
 from jinja2 import Environment, FileSystemLoader
@@ -19,6 +20,9 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'funnel.yaml'
 class Step(BaseModel):
     name: str
     value: Optional[int]
+    value_prev: Optional[int]
+    value_init: Optional[int]
+    idx: Optional[int]
 
     def get_table_id(self) -> str:
         return f'{config.PROJECT_ID}.{config.DATASET_ID}.{self.name}'
@@ -54,10 +58,11 @@ class Funnel(BaseModel):
         query_job = client.query(self.get_query())
         return [
             Step(**record)
-            for record in query_job.to_dataframe().to_dict('records')
+            # null -> None 으로 replace 한다.
+            for record in query_job.to_dataframe().replace({pd.NaT: None}).to_dict('records')
         ]
 
 
 if __name__ == '__main__':
     funnel = Funnel(**funnels[0])
-    print(funnel.get_query())
+    funnel.query_data()

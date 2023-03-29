@@ -1,6 +1,9 @@
 select
   step.name,
   countif(step.b) as value,
+  lag(countif(step.b), 1) over (order by any_value(step.idx)) as value_prev,
+  first_value(countif(step.b)) over (order by any_value(step.idx)) as value_init,
+  any_value(step.idx) as idx,
 from (
   select
     user_id,
