@@ -1,0 +1,6 @@
+name: membership
+human_readable_name: 멤버십 구독
+steps:
+  - view_paywall
+  - start_trial
+  - pay_membership

@@ -35,7 +35,7 @@ session
             text: funnel.title,
         },
         xAxis: {
-            categories: funnel.steps.map(step => step.name),
+            categories: funnel.steps,
         },
         yAxis: {
             title: {
@@ -91,6 +91,7 @@ session
         }
 
         const data = {
+            funnel_name: '{{ funnel.name }}',
             date_s: dateS,
             date_e: dateE,
             entity: entity,
@@ -107,7 +108,7 @@ session
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                const xxx = data.steps.map(step => {
+                const xxx = data.map(step => {
                     return {
                         name: step.name,
                         y: step.value,
