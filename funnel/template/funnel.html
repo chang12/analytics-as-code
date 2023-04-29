@@ -5,12 +5,60 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
+
 <header>
     <nav>
         <a href="/">Home</a>
     </nav>
 </header>
+
+<h1>입력</h1>
+<input type="date" id="date-s">
+<input type="date" id="date-e">
+<br><br>
+<input type="radio" id="option1" name="entity" value="user" checked>
+user
+<input type="radio" id="option2" name="entity" value="session">
+session
+<br><br>
+<input type="button" value="조회" onclick="draw_column_chart()">
+
+<h1>Column Chart</h1>
 <div id="container"></div>
+<script>
+    async function draw_column_chart() {
+        const dateS = document.getElementById("date-s").value;
+        const dateE = document.getElementById("date-e").value;
+
+        const entity_options = document.getElementsByName("entity");
+        let entity;
+        for (const entity_option of entity_options) {
+            if (entity_option.checked) {
+                entity = entity_option.value;
+                break;
+            }
+        }
+
+        const data = {
+            date_s: dateS,
+            date_e: dateE,
+            entity: entity,
+        };
+        console.log(data)
+
+        const requestOptions = {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch("http://localhost:8000/GetDataForColumnChart", requestOptions);
+        const responseData = await response.json();
+
+        // Handle the response data as needed
+        console.log(responseData);
+    }
+</script>
 <script>
     const funnel = JSON.parse('{{ funnel | tojson }}')
     const chart_data = {

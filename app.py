@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 import config
 from funnel.funnel import Funnel
+from funnel.model.column_chart_request import ColumnChartRequest
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config.PATH_TO_KEYFILE_JSON
 
@@ -39,3 +40,9 @@ async def read_funnel(request: Request, funnel_name: str):
             'funnel': funnels_dict[funnel_name].to_data().dict(),
         },
     )
+
+
+@app.post('/GetDataForColumnChart')
+async def get_data_for_column_chart(data: ColumnChartRequest):
+    print(data)
+    return data
