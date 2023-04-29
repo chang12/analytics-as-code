@@ -54,7 +54,7 @@ class Funnel(BaseModel):
         return funnel_sql_template.render(funnel=self)
 
     def query_data(self) -> List[Step]:
-        client = bigquery.Client(project=config.PROJECT_ID)
+        client = bigquery.Client()
         query_job = client.query(self.get_query())
         return [
             Step(**record)

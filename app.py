@@ -1,10 +1,14 @@
+import os
 from typing import Dict
 
 import yaml
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 
+import config
 from funnel.funnel import Funnel
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config.PATH_TO_KEYFILE_JSON
 
 app = FastAPI()
 
