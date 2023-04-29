@@ -26,7 +26,58 @@ session
 <h1>Column Chart</h1>
 <div id="container"></div>
 <script>
-    async function draw_column_chart() {
+    const funnel = JSON.parse('{{ funnel | tojson }}')
+    const chart = Highcharts.chart('container', {
+        chart: {
+            type: 'column',
+        },
+        title: {
+            text: funnel.title,
+        },
+        xAxis: {
+            categories: funnel.steps.map(step => step.name),
+        },
+        yAxis: {
+            title: {
+                text: '',
+            },
+            // max: 1.0,
+            formatter: function () {
+                // return (this.value * 100).toFixed(0) + '%';
+                return Highcharts.numberFormat(this.value, 0, ".", ",");
+            }
+        },
+        series: [{
+            name: 'value',
+            data: [],
+        }],
+        tooltip: {
+            pointFormatter: function () {
+                // return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + (this.y * 100).toFixed(0) + '%</b><br/>';
+                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b><br/>';
+            },
+        },
+    })
+
+    // dataLabels: {
+    //     enabled: true,
+    //     formatter: function () {
+    //         let arr = [`${this.point.y}`]
+    //         if (this.point.idx > 1) {
+    //             arr.push(`직전 step 대비 : ${this.point.value / this.point.value_prev} (${this.point.value} / ${this.point.value_prev})`)
+    //             arr.push(`최초 step 대비 : ${this.point.value / this.point.value_init} (${this.point.value} / ${this.point.value_init})`)
+    //         }
+    //         return arr.join('<br>')
+    //     },
+    //     // style: {
+    //     // textAnchor: 'middle',
+    //     // }
+    // },
+    // }],
+    // };
+</script>
+<script>
+    function draw_column_chart() {
         const dateS = document.getElementById("date-s").value;
         const dateE = document.getElementById("date-e").value;
 
@@ -52,69 +103,21 @@ session
             body: JSON.stringify(data),
         };
 
-        const response = await fetch("http://localhost:8000/GetDataForColumnChart", requestOptions);
-        const responseData = await response.json();
-
-        // Handle the response data as needed
-        console.log(responseData);
-    }
-</script>
-<script>
-    const funnel = JSON.parse('{{ funnel | tojson }}')
-    const chart_data = {
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: funnel.title
-        },
-        xAxis: {
-            categories: funnel.steps.map(step => step.name)
-        },
-        yAxis: {
-            title: {
-                text: ''
-            },
-            // max: 1.0,
-            labels: {
-                formatter: function () {
-                    // return (this.value * 100).toFixed(0) + '%';
-                    return Highcharts.numberFormat(this.value, 0, ".", ",");
-                }
-            }
-        },
-        series: [{
-            name: 'value',
-            data: funnel.steps.map(step => {
-                let step_copy = JSON.parse(JSON.stringify(step))
-                step_copy.y = step.value
-                return step_copy;
-            }),
-            dataLabels: {
-                enabled: true,
-                formatter: function () {
-                    let arr = [`${this.point.y}`]
-                    if (this.point.idx > 1) {
-                        arr.push(`직전 step 대비 : ${this.point.value / this.point.value_prev} (${this.point.value} / ${this.point.value_prev})`)
-                        arr.push(`최초 step 대비 : ${this.point.value / this.point.value_init} (${this.point.value} / ${this.point.value_init})`)
+        fetch("http://localhost:8000/GetDataForColumnChart", requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const xxx = data.steps.map(step => {
+                    return {
+                        name: step.name,
+                        y: step.value,
                     }
-                    return arr.join('<br>')
-                },
-                // style: {
-                // textAnchor: 'middle',
-                // }
-            },
-        }],
-        tooltip: {
-            pointFormatter: function () {
-                // return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + (this.y * 100).toFixed(0) + '%</b><br/>';
-                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b><br/>';
-            },
-        },
-    };
+                })
 
-    // Create the chart
-    Highcharts.chart('container', chart_data);
+                chart.series[0].setData(xxx);
+            })
+            .catch(error => console.log(error))
+    }
 </script>
 </body>
 </html>

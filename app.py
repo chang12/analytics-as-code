@@ -45,4 +45,4 @@ async def read_funnel(request: Request, funnel_name: str):
 @app.post('/GetDataForColumnChart')
 async def get_data_for_column_chart(data: ColumnChartRequest):
     print(data)
-    return data
+    return funnels_dict['onboarding'].to_data().dict()
