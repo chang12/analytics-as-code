@@ -22,13 +22,13 @@ async def read_root(request: Request):
     )
 
 
-@app.get('/funnels/{funnel_name}')
-async def read_funnel(request: Request, funnel_name: str):
+@app.get('/funnel')
+async def read_funnel(request: Request, name: str = None):
     return templates.TemplateResponse(
         name='funnel.html',
         context={
             'request': request,
-            'funnel': funnel_dict[funnel_name].dict(),
+            'funnel': funnel_dict[name].dict(),
         },
     )
 

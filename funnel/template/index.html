@@ -6,7 +6,7 @@
 </head>
 <body>
   {% for funnel in funnels %}
-  <h1><a href="funnels/{{ funnel.name }}">{{ funnel.human_readable_name }} ({{ funnel.name }})</a></h1>
+  <h1><a href="funnel?name={{ funnel.name }}">{{ funnel.human_readable_name }} ({{ funnel.name }})</a></h1>
   <ul>
     {% for step in funnel.steps %}
     <li>{{ step }}</li>
