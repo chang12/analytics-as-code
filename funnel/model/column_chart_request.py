@@ -6,9 +6,10 @@ from pydantic import BaseModel
 
 import config
 from funnel.model.entity import Entity
-from funnel.model.funnel import funnel_dict
+from funnel.model.funnel_ import funnel_dict
 
 env = Environment(loader=FileSystemLoader(os.path.join(config.BASE_PATH, 'funnel/template')))
+env.auto_reload = True
 sql_template_column_chart = env.get_template('column_chart.sql')
 
 

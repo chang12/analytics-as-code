@@ -9,7 +9,7 @@ import config
 from funnel.model.step import Step
 
 
-class Funnel(BaseModel):
+class Funnel_(BaseModel):
     name: str
     human_readable_name: str
     steps: List[str]
@@ -21,8 +21,8 @@ class Funnel(BaseModel):
         return [Step(name=step) for step in self.steps]
 
 
-funnel_dict: Dict[str, Funnel] = {}
+funnel_dict: Dict[str, Funnel_] = {}
 for file in glob.glob(os.path.join(config.BASE_PATH, 'funnel/funnel/*.yaml')):
     with open(file) as fp:
-        funnel = Funnel(**yaml.load(fp, Loader=yaml.FullLoader))
+        funnel = Funnel_(**yaml.load(fp, Loader=yaml.FullLoader))
         funnel_dict[funnel.name] = funnel

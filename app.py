@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 
 from funnel.model.column_chart_request import ColumnChartRequest
-from funnel.model.funnel import funnel_dict
+from funnel.model.funnel_ import funnel_dict
 from funnel.util.bigquery import query
 
 app = FastAPI()
