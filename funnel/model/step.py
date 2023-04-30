@@ -13,4 +13,4 @@ class Step(BaseModel):
     idx: Optional[int]
 
     def get_table_id(self) -> str:
-        return f'{config.PROJECT_ID}.{config.DATASET_ID}.{self.name}'
+        return f'{config.DATASET_ID}.{self.name}'

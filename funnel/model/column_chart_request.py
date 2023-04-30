@@ -30,3 +30,13 @@ class ColumnChartRequest(BaseModel):
             steps=funnel.list_steps(),
             **self.dict(),
         )
+
+
+if __name__ == '__main__':
+    xxx = ColumnChartRequest(
+        funnel_name='onboarding',
+        date_s=date(2023, 4, 29),
+        date_e=date(2023, 4, 29),
+        entity=Entity.USER,
+    )
+    print(xxx.to_sql())
