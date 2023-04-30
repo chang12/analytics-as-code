@@ -16,7 +16,7 @@
 <input type="date" id="date-s">
 <input type="date" id="date-e">
 <br><br>
-<input type="radio" id="option1" name="entity" value="user_id" checked>
+<input type="radio" id="option1" name="entity" value="user_id">
 user
 <input type="radio" id="option2" name="entity" value="session_id">
 session
@@ -78,16 +78,28 @@ session
 </script>
 <script>
     function draw_column_chart() {
+        // input 값 들을 읽는다.
         const dateS = document.getElementById("date-s").value;
+        if (dateS.trim() === '') {
+            alert('시작 날짜를 적어 주세요.');
+            return;
+        }
         const dateE = document.getElementById("date-e").value;
-
+        if (dateE.trim() === '') {
+            alert('종료 날짜를 적어 주세요.');
+            return;
+        }
         const entity_options = document.getElementsByName("entity");
-        let entity;
-        for (const entity_option of entity_options) {
-            if (entity_option.checked) {
-                entity = entity_option.value;
-                break;
+        const entity = (() => {
+            for (const entity_option of entity_options) {
+                if (entity_option.checked) {
+                    return entity_option.value;
+                }
             }
+        })();
+        if (typeof entity === 'undefined') {
+            alert('무엇을 셀 것인지 선택해 주세요.');
+            return;
         }
 
         const data = {
