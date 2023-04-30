@@ -26,6 +26,27 @@ session
 <h1>Column Chart</h1>
 <div id="container"></div>
 <script>
+    // query params 이 있으면, 그걸로 input value 를 채운다.
+    const currentUrl = new URL(window.location.href);
+    const dateS = currentUrl.searchParams.get('date_s');
+    if (dateS) {
+        document.getElementById('date-s').value = dateS;
+    }
+    const dateE = currentUrl.searchParams.get('date_e');
+    if (dateE) {
+        document.getElementById('date-e').value = dateE;
+    }
+    const entity = currentUrl.searchParams.get('entity');
+    if (entity) {
+        const entityOptions = document.getElementsByName('entity');
+        for (const entityOption of entityOptions) {
+            if (entityOption.value === entity) {
+                entityOption.checked = true;
+                break;
+            }
+        }
+    }
+
     const funnel = JSON.parse('{{ funnel | tojson }}')
     const chart = Highcharts.chart('container', {
         chart: {
@@ -120,14 +141,23 @@ session
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                const xxx = data.map(step => {
+
+                // column chart update 하고,
+                chart.series[0].setData(data.map(step => {
                     return {
                         name: step.name,
                         y: step.value,
                     }
-                })
+                }));
 
-                chart.series[0].setData(xxx);
+                // location 에 query params 추가 한다.
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                params.set('date_s', dateS);
+                params.set('date_e', dateE);
+                params.set('entity', entity);
+                url.search = params.toString();
+                history.pushState({}, '', url.toString());
             })
             .catch(error => console.log(error))
     }
