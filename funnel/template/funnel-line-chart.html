@@ -130,24 +130,20 @@
                 console.log(data);
 
                 // column chart update 하고,
-                data.forEach((series, i) => {
+                const series = data.map((series, i) => {
                     const seriesName = `${series.event_name1} -> ${series.event_name2}`
                     const dataWithTimestamps = series.data.map((dateValue) => {
                         // Convert date from 'yyyy-MM-dd' to a timestamp
                         const timestamp = new Date(dateValue.date).getTime();
                         return [timestamp, dateValue.value];
                     });
-
-                    if (chart.series[i]) {
-                        chart.series[i].setData(dataWithTimestamps);
-                    }
-                    else {
-                        chart.addSeries({
-                            name: seriesName,
-                            data: dataWithTimestamps,
-                        });
+                    return {
+                        name: seriesName,
+                        data: dataWithTimestamps,
                     }
                 });
+                // https://api.highcharts.com/class-reference/Highcharts.Chart.html#update
+                chart.update({series: series}, true, true)
 
                 // location 에 query params 추가 한다.
                 const url = new URL(window.location.href);
