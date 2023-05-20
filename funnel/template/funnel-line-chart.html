@@ -113,19 +113,18 @@
             return;
         }
 
-        const data = {
-            date_s: dateS,
-            date_e: dateE,
-        };
-        console.log(data)
-
+        let url = new URL("http://localhost:8000/GetDataForLineChart")
+        for (const eventName of eventNames) {
+            url.searchParams.append('event_names', eventName)
+        }
+        url.searchParams.append('date_s', dateS)
+        url.searchParams.append('date_e', dateE)
         const requestOptions = {
             method: "GET",
             headers: {"Content-Type": "application/json"},
-            // body: JSON.stringify(data),
         };
 
-        fetch("http://localhost:8000/GetDataForLineChart", requestOptions)
+        fetch(url, requestOptions)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
