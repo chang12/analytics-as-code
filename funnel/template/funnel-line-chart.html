@@ -61,10 +61,10 @@ session
         },
         xAxis: {
             type: 'datetime',
-            dateTimeLabelFormats: {
-                day: '%e. %b',
-                month: '%b \'%y',
-                year: '%Y'
+            labels: {
+                formatter: function () {
+                    return Highcharts.dateFormat('%Y-%m-%d', this.value);
+                }
             }
         },
         yAxis: {
