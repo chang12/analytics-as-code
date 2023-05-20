@@ -152,34 +152,40 @@ session
                     {
                         "name": "Tokyo",
                         "data": [
-                            [Date.UTC(2023, 4, 1), 14.5],
-                            [Date.UTC(2023, 4, 2), 15.2],
-                            [Date.UTC(2023, 4, 3), 15.7],
-                            [Date.UTC(2023, 4, 4), 16.5]
+                            ['2023-04-01', 14.5],
+                            ['2023-04-02', 15.2],
+                            ['2023-04-03', 15.7],
+                            ['2023-04-04', 16.5],
                         ]
                     },
                     {
                         "name": "London",
                         "data": [
-                            [Date.UTC(2023, 4, 1), 8.5],
-                            [Date.UTC(2023, 4, 2), 9.2],
-                            [Date.UTC(2023, 4, 3), 10.7],
-                            [Date.UTC(2023, 4, 4), 11.5]
+                            ['2023-04-01', 8.5],
+                            ['2023-04-02', 9.2],
+                            ['2023-04-03', 10.7],
+                            ['2023-04-04', 11.5],
                         ]
                     }
                 ]
 
                 // column chart update 하고,
                 data.forEach((newSeries, i) => {
+                    const dataWithTimestamps = newSeries.data.map(([date, value]) => {
+                        // Convert date from 'yyyy-MM-dd' to a timestamp
+                        const timestamp = new Date(date).getTime();
+                        return [timestamp, value];
+                    });
+
                     // If the series already exists in the chart, update it
                     if (chart.series[i]) {
-                        chart.series[i].setData(newSeries.data);
+                        chart.series[i].setData(dataWithTimestamps);
                     }
                     // Otherwise, add a new series
                     else {
                         chart.addSeries({
                             name: newSeries.name,
-                            data: newSeries.data
+                            data: dataWithTimestamps,
                         });
                     }
                 });
