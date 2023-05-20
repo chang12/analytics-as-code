@@ -129,43 +129,21 @@
             .then(data => {
                 console.log(data);
 
-                data = [
-                    {
-                        "name": "Tokyo",
-                        "data": [
-                            ['2023-04-01', 0.213],
-                            ['2023-04-02', 0.223],
-                            ['2023-04-03', 0.197],
-                            ['2023-04-04', 0.241],
-                        ]
-                    },
-                    {
-                        "name": "London",
-                        "data": [
-                            ['2023-04-01', 0.555],
-                            ['2023-04-02', 0.549],
-                            ['2023-04-03', 0.559],
-                            ['2023-04-04', 0.512],
-                        ]
-                    }
-                ]
-
                 // column chart update 하고,
-                data.forEach((newSeries, i) => {
-                    const dataWithTimestamps = newSeries.data.map(([date, value]) => {
+                data.forEach((series, i) => {
+                    const seriesName = `${series.event_name1} -> ${series.event_name2}`
+                    const dataWithTimestamps = series.data.map((dateValue) => {
                         // Convert date from 'yyyy-MM-dd' to a timestamp
-                        const timestamp = new Date(date).getTime();
-                        return [timestamp, value];
+                        const timestamp = new Date(dateValue.date).getTime();
+                        return [timestamp, dateValue.value];
                     });
 
-                    // If the series already exists in the chart, update it
                     if (chart.series[i]) {
                         chart.series[i].setData(dataWithTimestamps);
                     }
-                    // Otherwise, add a new series
                     else {
                         chart.addSeries({
-                            name: newSeries.name,
+                            name: seriesName,
                             data: dataWithTimestamps,
                         });
                     }
