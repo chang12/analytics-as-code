@@ -71,19 +71,13 @@ session
             title: {
                 text: '',
             },
-            // max: 1.0,
-            formatter: function () {
-                // return (this.value * 100).toFixed(0) + '%';
-                return Highcharts.numberFormat(this.value, 0, ".", ",");
-            }
-        },
-        series: [],
-        tooltip: {
-            pointFormatter: function () {
-                // return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + (this.y * 100).toFixed(0) + '%</b><br/>';
-                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b><br/>';
+            labels: {
+                formatter: function () {
+                    return (this.value * 100) + '%';
+                },
             },
         },
+        series: [],
     })
 
     // dataLabels: {
@@ -152,19 +146,19 @@ session
                     {
                         "name": "Tokyo",
                         "data": [
-                            ['2023-04-01', 14.5],
-                            ['2023-04-02', 15.2],
-                            ['2023-04-03', 15.7],
-                            ['2023-04-04', 16.5],
+                            ['2023-04-01', 0.213],
+                            ['2023-04-02', 0.223],
+                            ['2023-04-03', 0.197],
+                            ['2023-04-04', 0.241],
                         ]
                     },
                     {
                         "name": "London",
                         "data": [
-                            ['2023-04-01', 8.5],
-                            ['2023-04-02', 9.2],
-                            ['2023-04-03', 10.7],
-                            ['2023-04-04', 11.5],
+                            ['2023-04-01', 0.555],
+                            ['2023-04-02', 0.549],
+                            ['2023-04-03', 0.559],
+                            ['2023-04-04', 0.512],
                         ]
                     }
                 ]
