@@ -1,5 +1,9 @@
+pyenv 를 설치 한다. 
+
+pyenv-virtualenv https://github.com/pyenv/pyenv-virtualenv 를 설치 한다.
+
 ```bash
-pyenv virtualenv 3.10 analytics-as-code
+pyenv virtualenv 3.10.11 analytics-as-code
 
 # 혹은
 pyenv activate analytics-as-code
