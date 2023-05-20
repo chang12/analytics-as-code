@@ -3,12 +3,16 @@
     <meta charset="UTF-8">
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         .event {
             margin: 5px 0;
             display: block;
             font-size: 1.2em; /* increase font size */
             padding: 10px; /* add padding */
+        }
+        .delete-icon {
+            float: right;
         }
     </style>
 </head>
@@ -23,7 +27,7 @@
     <input type="date" id="date-e">
     <input type="button" value="조회" onclick="draw_line_chart()">
     <br><br>
-    <div id="events"></div>
+    <ul id="events" class="list-group"></ul>
     <br><br>
     <div id="container"></div>
 </div>
@@ -33,7 +37,7 @@
     function displayEvents() {
         $('#events').empty()
         for (const eventName of eventNames) {
-            $("#events").append(`<div class="badge badge-secondary event ${eventName}">${eventName}</div>`);
+            $("#events").append(`<li class="list-group-item">${eventName} <i class="fas fa-trash delete-icon"></i></li>`);
         }
     }
 
