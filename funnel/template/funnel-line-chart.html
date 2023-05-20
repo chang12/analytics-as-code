@@ -11,6 +11,7 @@
             font-size: 1.2em; /* increase font size */
             padding: 10px; /* add padding */
         }
+
         .delete-icon {
             float: right;
         }
@@ -37,7 +38,7 @@
     function displayEvents() {
         $('#events').empty()
         for (const eventName of eventNames) {
-            $("#events").append(`<li class="list-group-item">${eventName} <i class="fas fa-trash delete-icon"></i></li>`);
+            $("#events").append(`<li class="list-group-item">${eventName} <i class="fas fa-trash delete-icon" onclick="deleteEvent('${eventName}')"></i></li>`);
         }
     }
 
@@ -52,11 +53,16 @@
             alert('이벤트 내용을 입력해주세요!');
         }
     }
+
+    function deleteEvent(eventName) {
+        eventNames = eventNames.filter(item => item !== eventName)
+        displayEvents()
+    }
 </script>
 <script>
     // query params 이 있으면, 그걸로 input value 를 채운다.
     const currentUrl = new URL(window.location.href);
-    const eventNames = currentUrl.searchParams.getAll('event_name');
+    let eventNames = currentUrl.searchParams.getAll('event_name');
     displayEvents();
     const dateS = currentUrl.searchParams.get('date_s');
     if (dateS) {
