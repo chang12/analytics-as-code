@@ -31,9 +31,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
     function displayEvents() {
-        let eventsDiv = document.getElementById('events');
-        eventsDiv.innerHTML = ''; // 이벤트 div 초기화
-
+        $('#events').empty()
         for (const eventName of eventNames) {
             $("#events").append(`<div class="badge badge-secondary event ${eventName}">${eventName}</div>`);
         }
