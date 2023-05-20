@@ -1,37 +1,61 @@
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <script src="https://code.highcharts.com/highcharts.js"></script>
+    <meta charset="UTF-8">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .event {
+            margin: 5px 0;
+            display: block;
+            font-size: 1.2em; /* increase font size */
+            padding: 10px; /* add padding */
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <nav>
-    <a href="/">Home</a>
-  </nav>
-</header>
+<div class="container">
+    <br><br>
+    <input type="text" id="eventInput" placeholder="이벤트 추가">
+    <button onclick="addEvent()">이벤트 추가</button>
+    <br><br>
+    <input type="date" id="date-s">
+    <input type="date" id="date-e">
+    <input type="button" value="조회" onclick="draw_line_chart()">
+    <br><br>
+    <div id="events"></div>
+    <br><br>
+    <div id="container"></div>
+</div>
 
-<h1>{{ funnel.human_readable_name }} ({{ funnel.name }})</h1>
-{% for step in funnel.steps %}
-<li>{{ step }}</li>
-{% endfor %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function displayEvents() {
+        let eventsDiv = document.getElementById('events');
+        eventsDiv.innerHTML = ''; // 이벤트 div 초기화
 
-<h1>입력</h1>
-<input type="date" id="date-s">
-<input type="date" id="date-e">
-<br><br>
-<input type="radio" id="option1" name="entity" value="user_id">
-user
-<input type="radio" id="option2" name="entity" value="session_id">
-session
-<br><br>
-<input type="button" value="조회" onclick="draw_line_chart()">
+        for (const eventName of eventNames) {
+            $("#events").append(`<div class="badge badge-secondary event ${eventName}">${eventName}</div>`);
+        }
+    }
 
-<h1>Line Chart</h1>
-<div id="container"></div>
+    function addEvent() {
+        let eventInput = document.getElementById('eventInput');
+        let newEvent = eventInput.value;
+        if (newEvent !== '') {
+            eventNames.push(newEvent);
+            eventInput.value = ''; // 입력 창 초기화
+            displayEvents(); // 이벤트 목록 업데이트
+        } else {
+            alert('이벤트 내용을 입력해주세요!');
+        }
+    }
+</script>
 <script>
     // query params 이 있으면, 그걸로 input value 를 채운다.
     const currentUrl = new URL(window.location.href);
+    const eventNames = currentUrl.searchParams.getAll('event_name');
+    displayEvents();
     const dateS = currentUrl.searchParams.get('date_s');
     if (dateS) {
         document.getElementById('date-s').value = dateS;
@@ -40,25 +64,12 @@ session
     if (dateE) {
         document.getElementById('date-e').value = dateE;
     }
-    const entity = currentUrl.searchParams.get('entity');
-    if (entity) {
-        const entityOptions = document.getElementsByName('entity');
-        for (const entityOption of entityOptions) {
-            if (entityOption.value === entity) {
-                entityOption.checked = true;
-                break;
-            }
-        }
-    }
 
-    const funnel = JSON.parse('{{ funnel | tojson }}');
     const chart = Highcharts.chart('container', {
         chart: {
             type: 'line',
         },
-        title: {
-            text: funnel.title,
-        },
+        title: '',
         xAxis: {
             type: 'datetime',
             labels: {
@@ -79,23 +90,6 @@ session
         },
         series: [],
     })
-
-    // dataLabels: {
-    //     enabled: true,
-    //     formatter: function () {
-    //         let arr = [`${this.point.y}`]
-    //         if (this.point.idx > 1) {
-    //             arr.push(`직전 step 대비 : ${this.point.value / this.point.value_prev} (${this.point.value} / ${this.point.value_prev})`)
-    //             arr.push(`최초 step 대비 : ${this.point.value / this.point.value_init} (${this.point.value} / ${this.point.value_init})`)
-    //         }
-    //         return arr.join('<br>')
-    //     },
-    //     // style: {
-    //     // textAnchor: 'middle',
-    //     // }
-    // },
-    // }],
-    // };
 </script>
 <script>
     function draw_line_chart() {
@@ -110,24 +104,10 @@ session
             alert('종료 날짜를 적어 주세요.');
             return;
         }
-        const entityOptions = document.getElementsByName("entity");
-        const entity = (() => {
-            for (const entityOption of entityOptions) {
-                if (entityOption.checked) {
-                    return entityOption.value;
-                }
-            }
-        })();
-        if (typeof entity === 'undefined') {
-            alert('무엇을 셀 것인지 선택해 주세요.');
-            return;
-        }
 
         const data = {
-            funnel_name: funnel.name,
             date_s: dateS,
             date_e: dateE,
-            entity: entity,
         };
         console.log(data)
 
@@ -187,9 +167,12 @@ session
                 // location 에 query params 추가 한다.
                 const url = new URL(window.location.href);
                 const params = new URLSearchParams(url.search);
+                params.delete('event_name')
+                for (const eventName of eventNames) {
+                    params.append('event_name', eventName)
+                }
                 params.set('date_s', dateS);
                 params.set('date_e', dateE);
-                params.set('entity', entity);
                 url.search = params.toString();
                 history.pushState({}, '', url.toString());
             })

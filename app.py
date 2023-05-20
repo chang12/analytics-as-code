@@ -40,12 +40,11 @@ async def get_data_for_column_chart(data: ColumnChartRequest):
 
 
 @app.get('/funnel-line-chart')
-async def funnel_line_chart(request: Request, name: str = None):
+async def funnel_line_chart(request: Request):
     return templates.TemplateResponse(
         name='funnel-line-chart.html',
         context={
             'request': request,
-            'funnel': funnel_dict[name].dict(),
         },
     )
 
