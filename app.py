@@ -37,3 +37,21 @@ async def read_funnel(request: Request, name: str = None):
 async def get_data_for_column_chart(data: ColumnChartRequest):
     sql = data.to_sql()
     return query(sql)
+
+
+@app.get('/funnel-line-chart')
+async def funnel_line_chart(request: Request, name: str = None):
+    return templates.TemplateResponse(
+        name='funnel-line-chart.html',
+        context={
+            'request': request,
+            'funnel': funnel_dict[name].dict(),
+        },
+    )
+
+
+@app.get('/GetDataForLineChart')
+async def get_data_for_line_chart():
+    # sql = data.to_sql()
+    # return query(sql)
+    return {}

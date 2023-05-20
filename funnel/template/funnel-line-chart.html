@@ -1,0 +1,200 @@
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/">Home</a>
+  </nav>
+</header>
+
+<h1>{{ funnel.human_readable_name }} ({{ funnel.name }})</h1>
+{% for step in funnel.steps %}
+<li>{{ step }}</li>
+{% endfor %}
+
+<h1>입력</h1>
+<input type="date" id="date-s">
+<input type="date" id="date-e">
+<br><br>
+<input type="radio" id="option1" name="entity" value="user_id">
+user
+<input type="radio" id="option2" name="entity" value="session_id">
+session
+<br><br>
+<input type="button" value="조회" onclick="draw_line_chart()">
+
+<h1>Line Chart</h1>
+<div id="container"></div>
+<script>
+    // query params 이 있으면, 그걸로 input value 를 채운다.
+    const currentUrl = new URL(window.location.href);
+    const dateS = currentUrl.searchParams.get('date_s');
+    if (dateS) {
+        document.getElementById('date-s').value = dateS;
+    }
+    const dateE = currentUrl.searchParams.get('date_e');
+    if (dateE) {
+        document.getElementById('date-e').value = dateE;
+    }
+    const entity = currentUrl.searchParams.get('entity');
+    if (entity) {
+        const entityOptions = document.getElementsByName('entity');
+        for (const entityOption of entityOptions) {
+            if (entityOption.value === entity) {
+                entityOption.checked = true;
+                break;
+            }
+        }
+    }
+
+    const funnel = JSON.parse('{{ funnel | tojson }}');
+    const chart = Highcharts.chart('container', {
+        chart: {
+            type: 'line',
+        },
+        title: {
+            text: funnel.title,
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e. %b',
+                month: '%b \'%y',
+                year: '%Y'
+            }
+        },
+        yAxis: {
+            title: {
+                text: '',
+            },
+            // max: 1.0,
+            formatter: function () {
+                // return (this.value * 100).toFixed(0) + '%';
+                return Highcharts.numberFormat(this.value, 0, ".", ",");
+            }
+        },
+        series: [],
+        tooltip: {
+            pointFormatter: function () {
+                // return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + (this.y * 100).toFixed(0) + '%</b><br/>';
+                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b><br/>';
+            },
+        },
+    })
+
+    // dataLabels: {
+    //     enabled: true,
+    //     formatter: function () {
+    //         let arr = [`${this.point.y}`]
+    //         if (this.point.idx > 1) {
+    //             arr.push(`직전 step 대비 : ${this.point.value / this.point.value_prev} (${this.point.value} / ${this.point.value_prev})`)
+    //             arr.push(`최초 step 대비 : ${this.point.value / this.point.value_init} (${this.point.value} / ${this.point.value_init})`)
+    //         }
+    //         return arr.join('<br>')
+    //     },
+    //     // style: {
+    //     // textAnchor: 'middle',
+    //     // }
+    // },
+    // }],
+    // };
+</script>
+<script>
+    function draw_line_chart() {
+        // input 값 들을 읽는다.
+        const dateS = document.getElementById("date-s").value;
+        if (dateS.trim() === '') {
+            alert('시작 날짜를 적어 주세요.');
+            return;
+        }
+        const dateE = document.getElementById("date-e").value;
+        if (dateE.trim() === '') {
+            alert('종료 날짜를 적어 주세요.');
+            return;
+        }
+        const entityOptions = document.getElementsByName("entity");
+        const entity = (() => {
+            for (const entityOption of entityOptions) {
+                if (entityOption.checked) {
+                    return entityOption.value;
+                }
+            }
+        })();
+        if (typeof entity === 'undefined') {
+            alert('무엇을 셀 것인지 선택해 주세요.');
+            return;
+        }
+
+        const data = {
+            funnel_name: funnel.name,
+            date_s: dateS,
+            date_e: dateE,
+            entity: entity,
+        };
+        console.log(data)
+
+        const requestOptions = {
+            method: "GET",
+            headers: {"Content-Type": "application/json"},
+            // body: JSON.stringify(data),
+        };
+
+        fetch("http://localhost:8000/GetDataForLineChart", requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                data = [
+                    {
+                        "name": "Tokyo",
+                        "data": [
+                            [Date.UTC(2023, 4, 1), 14.5],
+                            [Date.UTC(2023, 4, 2), 15.2],
+                            [Date.UTC(2023, 4, 3), 15.7],
+                            [Date.UTC(2023, 4, 4), 16.5]
+                        ]
+                    },
+                    {
+                        "name": "London",
+                        "data": [
+                            [Date.UTC(2023, 4, 1), 8.5],
+                            [Date.UTC(2023, 4, 2), 9.2],
+                            [Date.UTC(2023, 4, 3), 10.7],
+                            [Date.UTC(2023, 4, 4), 11.5]
+                        ]
+                    }
+                ]
+
+                // column chart update 하고,
+                data.forEach((newSeries, i) => {
+                    // If the series already exists in the chart, update it
+                    if (chart.series[i]) {
+                        chart.series[i].setData(newSeries.data);
+                    }
+                    // Otherwise, add a new series
+                    else {
+                        chart.addSeries({
+                            name: newSeries.name,
+                            data: newSeries.data
+                        });
+                    }
+                });
+
+                // location 에 query params 추가 한다.
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                params.set('date_s', dateS);
+                params.set('date_e', dateE);
+                params.set('entity', entity);
+                url.search = params.toString();
+                history.pushState({}, '', url.toString());
+            })
+            .catch(error => console.log(error))
+    }
+</script>
+</body>
+</html>
