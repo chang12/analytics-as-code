@@ -55,8 +55,9 @@ async def funnel_line_chart(request: Request):
 
 @app.get('/GetDataForLineChart')
 async def get_data_for_line_chart(date_s: date, date_e: date, event_names: List[str] = Query(...)):
-    data = FunnelLineChartRequest(event_names=event_names, date_s=date_s, date_e=date_e)
-    # sql = data.to_sql()
+    request = FunnelLineChartRequest(event_names=event_names, date_s=date_s, date_e=date_e)
+    sql = request.to_sql()
+    print(sql)
     # return query(sql)
     return [
         {
