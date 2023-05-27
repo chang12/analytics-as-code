@@ -17,12 +17,10 @@ class FunnelLineChartRequest(BaseModel):
     date_e: date
 
     def to_sql(self):
-        event_name1 = 'first_open'
-        event_name2 = 'sign_up'
+        event_name_pairs = list(zip(self.event_names, self.event_names[1:]))
 
         return env.get_template('line_chart_step_wise_conversions.sql').render(
-            event_name1=event_name1,
-            event_name2=event_name2,
+            event_name_pairs=event_name_pairs,
             date1=self.date_s.isoformat(),
             date2=self.date_e.isoformat(),
         )

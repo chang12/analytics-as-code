@@ -58,6 +58,8 @@ group by
 
 )
 
+, aggregated_by_date as (
+
 select
   _date,
   countif(is_converted) / count(1) as value,
@@ -65,5 +67,18 @@ from
   aggregated_by_date_and_user
 group by
   _date
+
+)
+
+select
+  '{{ event_name1 }}' as event_name1,
+  '{{ event_name2 }}' as event_name2,
+  array(
+    select as struct
+      _date as date,
+      value,
+    from
+      aggregated_by_date
+  ) as data,
 
 {% endmacro %}
