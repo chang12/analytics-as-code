@@ -57,43 +57,18 @@ async def funnel_line_chart(request: Request):
 async def get_data_for_line_chart(date_s: date, date_e: date, event_names: List[str] = Query(...)):
     request = FunnelLineChartRequest(event_names=event_names, date_s=date_s, date_e=date_e)
     sql = request.to_sql()
-    print(sql)
-    # return query(sql)
+    rows = query(sql)
     return [
         {
-            "event_name1": "first_open",
-            "event_name2": "sign_up",
-            "data": [
+            'event_name1': row.event_name1,
+            'event_name2': row.event_name2,
+            'data': [
                 {
-                    "date": "2023-05-01",
-                    "value": 0.812
-                },
-                {
-                    "date": "2023-05-02",
-                    "value": 0.828
-                },
-                {
-                    "date": "2023-05-03",
-                    "value": 0.821
+                    'date': e['date'],
+                    'value': e['value'],
                 }
-            ]
-        },
-        {
-            "event_name1": "sign_up",
-            "event_name2": "tutorial_completed",
-            "data": [
-                {
-                    "date": "2023-05-01",
-                    "value": 0.711
-                },
-                {
-                    "date": "2023-05-02",
-                    "value": 0.729
-                },
-                {
-                    "date": "2023-05-03",
-                    "value": 0.736
-                }
-            ]
+                for e in row.data
+            ],
         }
+        for row in rows
     ]
