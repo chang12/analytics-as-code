@@ -79,6 +79,8 @@ select
       value,
     from
       aggregated_by_date
+    order by
+      date
   ) as data,
 
 {% endmacro %}
