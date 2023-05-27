@@ -50,6 +50,7 @@ from
   event_augmented
 where
   event_name = '{{ event_name1 }}'
+  and _date between '{{ date1 }}' and '{{ date2 }}'
 group by
   _date, user_id
 
@@ -61,6 +62,4 @@ select
 from
   aggregated_by_date_and_user
 group by
-  _date
-order by
   _date

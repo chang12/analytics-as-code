@@ -2,14 +2,14 @@ import os
 from datetime import date
 from typing import List
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from pydantic import BaseModel
 
 import config
 
-env = Environment(loader=FileSystemLoader(os.path.join(config.BASE_PATH, 'funnel/template')))
+env = Environment(loader=FileSystemLoader(os.path.join(config.BASE_PATH, 'funnel/template')), undefined=StrictUndefined)
 env.auto_reload = True
-line_chart_template_sql = env.get_template('line_chart.sql')
+line_chart_template_sql = env.get_template('line_chart_step_wise_conversion.sql')
 
 
 class FunnelLineChartRequest(BaseModel):
@@ -24,4 +24,6 @@ class FunnelLineChartRequest(BaseModel):
         return line_chart_template_sql.render(
             event_name1=event_name1,
             event_name2=event_name2,
+            date1=self.date_s.isoformat(),
+            date2=self.date_e.isoformat(),
         )
