@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from funnel.model.column_chart_request import ColumnChartRequest
 from funnel.model.funnel_ import funnel_dict
 from funnel.model.funnel_line_chart_request import FunnelLineChartRequest
+from funnel.model.funnel_line_chart_response_element import FunnelLineChartResponseElement
 from funnel.util.bigquery import query
 
 app = FastAPI()
@@ -53,22 +54,10 @@ async def funnel_line_chart(request: Request):
     )
 
 
-@app.get('/GetDataForLineChart')
+@app.get('/GetDataForLineChart', response_model=List[FunnelLineChartResponseElement])
 async def get_data_for_line_chart(date_s: date, date_e: date, event_names: List[str] = Query(...)):
     request = FunnelLineChartRequest(event_names=event_names, date_s=date_s, date_e=date_e)
     sql = request.to_sql()
     rows = query(sql)
-    return [
-        {
-            'event_name1': row.event_name1,
-            'event_name2': row.event_name2,
-            'data': [
-                {
-                    'date': e['date'],
-                    'value': e['value'],
-                }
-                for e in row.data
-            ],
-        }
-        for row in rows
-    ]
+
+    return rows
