@@ -9,7 +9,6 @@ import config
 
 env = Environment(loader=FileSystemLoader(os.path.join(config.BASE_PATH, 'funnel/template')), undefined=StrictUndefined)
 env.auto_reload = True
-line_chart_template_sql = env.get_template('line_chart_step_wise_conversion.sql')
 
 
 class FunnelLineChartRequest(BaseModel):
@@ -21,7 +20,7 @@ class FunnelLineChartRequest(BaseModel):
         event_name1 = 'first_open'
         event_name2 = 'sign_up'
 
-        return line_chart_template_sql.render(
+        return env.get_template('line_chart_step_wise_conversions.sql').render(
             event_name1=event_name1,
             event_name2=event_name2,
             date1=self.date_s.isoformat(),

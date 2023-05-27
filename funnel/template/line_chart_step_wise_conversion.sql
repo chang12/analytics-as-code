@@ -1,3 +1,5 @@
+{% macro line_chart_step_wise_conversion(event_name1, event_name2, date1, date2) %}
+
 with
 
 event as (
@@ -63,3 +65,5 @@ from
   aggregated_by_date_and_user
 group by
   _date
+
+{% endmacro %}
